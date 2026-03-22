@@ -20,16 +20,14 @@ AI Resume Analyzer is a powerful tool designed to bridge the gap between job see
 
 ## 🖼️ UI Demonstration
 
-### Landing View
-![Hero Image](./frontend/src/assets/hero.png)
 
-### Empty Analyzer State
+### Landing View \ Empty Analyzer State
 ![Empty Analyzer State](./frontend/src/assets/ui-empty-state.png)
 
-### Full Analyzer View
+### Full Analyzer View & Analysis Report
 ![Full Analyzer View](./frontend/src/assets/ui-full-analyzer-view.png)
 
-### Analysis Report
+
 ![Analysis Report](./frontend/src/assets/ui-analysis-report.png)
 
 ---
