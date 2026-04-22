@@ -1,15 +1,15 @@
 # Build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src/backend
+WORKDIR /app
 
-# Copy csproj first (better caching)
+# Copy csproj
 COPY *.csproj ./
 RUN dotnet restore
 
-# Copy everything else
+# Copy rest of files
 COPY . .
 
-# Publish app
+# Publish
 RUN dotnet publish -c Release -o /app/publish
 
 # Runtime stage
