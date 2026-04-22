@@ -1,5 +1,8 @@
 using ResumeATS.Extensions;
 using ResumeATS.Middleware;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,24 +20,38 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSwaggerDocumentation();
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("Fixed", config =>
+    {
+        config.Window = TimeSpan.FromMinutes(1);
+        config.PermitLimit = 5;
+        config.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        config.QueueLimit = 0;
+    });
+
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        context.HttpContext.Response.Headers.RetryAfter = "60";
+        await context.HttpContext.Response.WriteAsync("Too many requests. Please try again later.", cancellationToken);
+    };
+});
 
 // ── Build ─────────────────────────────────────────────────────────────────────
 var app = builder.Build();
 
 // ── Middleware pipeline ────────────────────────────────────────────────────────
 
-// 1. Global exception handler — always first so it wraps everything
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
-// 2. Swagger — available in all environments (guarded by env check if desired)
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "ATS Resume Analyzer v1");
-    c.RoutePrefix = "swagger"; // UI at /swagger  (avoids root redirect conflict)
+    c.RoutePrefix = "swagger"; 
 });
 
-// 3. HTTPS redirect AFTER Swagger so the /swagger route isn't caught by it
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
@@ -42,8 +59,11 @@ if (!app.Environment.IsDevelopment())
 
 app.UseCors();
 
+// Enable rate limiting middleware (applies to endpoints that opt in)
+app.UseRateLimiter();
+
 app.UseAuthorization();
-app.MapControllers();
+app.MapControllers().RequireRateLimiting("Fixed");
 
 app.Run();
 //app.Run("http://0.0.0.0:5213");
