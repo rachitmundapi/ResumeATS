@@ -33,7 +33,7 @@ public sealed class ResumeAnalyzerService : IResumeAnalyzerService
         _logger = logger;
     }
 
-    /// <inheritdoc/>
+
     public async Task<ResumeAnalysisResponse> AnalyzeAsync(
         ResumeAnalysisRequest request)
     {
@@ -45,7 +45,7 @@ public sealed class ResumeAnalyzerService : IResumeAnalyzerService
         var rawJson = await _groqClient.ChatAsync(
             systemPrompt,
             userPrompt,
-            request.ModelOverride
+            request.ModelOverride ?? _options.Model
             );
 
         _logger.LogDebug("Raw Groq response: {Response}", rawJson);
