@@ -44,8 +44,7 @@ public sealed class ResumeAnalyzerService : IResumeAnalyzerService
 
         var rawJson = await _groqClient.ChatAsync(
             systemPrompt,
-            userPrompt,
-            request.ModelOverride ?? _options.Model
+            userPrompt
             );
 
         _logger.LogDebug("Raw Groq response: {Response}", rawJson);

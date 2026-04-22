@@ -45,12 +45,11 @@ public sealed class GroqClient
     /// </param>
     public async Task<string> ChatAsync(
         string systemPrompt,
-        string userPrompt,
-        string? modelOverride = null)
+        string userPrompt)
     {
         var requestBody = new
         {
-            model = modelOverride ?? _options.Model,
+            model =  _options.Model,
             messages = new[]
             {
                 new { role = "system", content = systemPrompt },
