@@ -37,7 +37,6 @@ public sealed class ResumeAnalyzerService : IResumeAnalyzerService
     public async Task<ResumeAnalysisResponse> AnalyzeAsync(
         ResumeAnalysisRequest request)
     {
-        _logger.LogInformation("Starting ATS analysis. Model override: {Override}", request.ModelOverride ?? "none");
 
         var systemPrompt = PromptBuilder.BuildSystemPrompt();
         var userPrompt   = PromptBuilder.BuildUserPrompt(request.ResumeText, request.JobDescription);
@@ -57,7 +56,7 @@ public sealed class ResumeAnalyzerService : IResumeAnalyzerService
         var parsed = JsonSerializer.Deserialize<ResumeAnalysisResponse>(cleanJson, _jsonOptions)
             ?? throw new InvalidOperationException("Groq returned a null or empty analysis.");
 
-        parsed.ModelUsed  = request.ModelOverride ?? _options.Model;
+        parsed.ModelUsed  = _options.Model;
         parsed.AnalysedAt = DateTime.UtcNow;
 
         _logger.LogInformation("ATS analysis complete. Score: {Score}", parsed.AtsScore);

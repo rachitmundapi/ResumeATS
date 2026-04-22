@@ -21,5 +21,4 @@ public sealed class ResumeAnalysisRequest
     /// Optional: override the model used for this specific request.
     /// Falls back to the value configured in appsettings.json when null or empty.
     /// </summary>
-    public string? ModelOverride { get; set; }
 }
