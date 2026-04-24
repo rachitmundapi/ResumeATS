@@ -1,8 +1,10 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const endpoint = import.meta.env._endpoint || '/redirectApiRequest';
 
-const apiClient = async (endpoint, options = {}) => {
-  const { method = 'GET', body, headers = {} } = options;
 
+const apiClient = async (options = {}) => {
+  const { method = 'POST', body, headers = {} } = options;
+console.log(options);
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     method,
     headers: {
